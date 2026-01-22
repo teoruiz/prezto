@@ -11,3 +11,63 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # Customize to your needs...
+# .local in path
+export FLYCTL_INSTALL="/home/teo/.fly"
+export PATH="$FLYCTL_INSTALL/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+
+# Gems things
+export PATH="$HOME/.local/share/gem/ruby/3.4.0/bin:$PATH"
+
+# Let's use nvim instead of vim for most things
+alias vim='nvim'
+alias vimpure='/usr/bin/vim'
+
+# directory hops
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+# Zoxied and stuff
+if command -v zoxide &> /dev/null; then
+  eval "$(zoxide init zsh)"
+fi
+
+zd() {
+  if [ $# -eq 0 ]; then
+    builtin cd ~ && return
+  elif [ -d "$1" ]; then
+    builtin cd "$1"
+  else
+    z "$@" && printf "\U000F17A9 " && pwd || echo "Error: Directory not found"
+  fi
+}
+alias cd='zd'
+
+# Mise setup
+if command -v mise &> /dev/null; then
+  eval "$(mise activate zsh)"
+fi
+
+
+# tools
+alias d='docker'
+alias decompress='tar -xzf'   # expects a .tar.gz filename after it
+
+# fuzzy find with preview
+alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
+
+# git
+alias g='git'
+alias gcad='git commit -a --amend'
+alias gcam='git commit -a -m'
+alias gcm='git commit -m'
+
+# listing (eza)
+alias ls='eza -lh --group-directories-first --icons=auto'
+alias lsa='ls -a'
+alias lt='eza --tree --level=2 --long --icons --git'
+alias lta='lt -a'
+
+# bun completions
+[ -s "/home/teo/.bun/_bun" ] && source "/home/teo/.bun/_bun"
