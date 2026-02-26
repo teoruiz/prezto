@@ -15,3 +15,5 @@ export SSH_AUTH_SOCK=$XDG_RUNTIME_DIR/ssh-agent.socket
 # Editor used by CLI
 export SUDO_EDITOR="$EDITOR"
 export BAT_THEME=ansi
+
+export GOBIN=$HOME/.local/bin/
