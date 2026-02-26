@@ -12,16 +12,29 @@ fi
 
 # Customize to your needs...
 # .local in path
-export FLYCTL_INSTALL="/home/teo/.fly"
-export PATH="$FLYCTL_INSTALL/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
-# Gems things
-export PATH="$HOME/.local/share/gem/ruby/3.4.0/bin:$PATH"
+if [[ -d "$HOME/.deno" ]]; then
+  export PATH="$HOME/.deno/bin:$PATH"
+fi
+
+# Flyctl
+if [[ -d "$HOME/.fly" ]]; then
+  export FLYCTL_INSTALL="$HOME/.fly"
+  export PATH="$FLYCTL_INSTALL/bin:$PATH"
+fi
+
+# Gems — find whatever ruby version is installed
+for _gemdir in "$HOME"/.local/share/gem/ruby/*/bin(NOn); do
+  export PATH="$_gemdir:$PATH"
+  break  # use newest version only
+done
+unset _gemdir
 
 # Let's use nvim instead of vim for most things
-alias vim='nvim'
-alias vimpure='/usr/bin/vim'
+if command -v nvim &> /dev/null; then
+  alias vim='nvim'
+fi
 
 # directory hops
 alias ..='cd ..'
@@ -55,7 +68,9 @@ alias d='docker'
 alias decompress='tar -xzf'   # expects a .tar.gz filename after it
 
 # fuzzy find with preview
-alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
+if command -v fzf &> /dev/null && command -v bat &> /dev/null; then
+  alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
+fi
 
 # git
 alias g='git'
@@ -64,15 +79,19 @@ alias gcam='git commit -a -m'
 alias gcm='git commit -m'
 
 # listing (eza)
-alias ls='eza -lh --group-directories-first --icons=auto'
-alias lsa='ls -a'
-alias lt='eza --tree --level=2 --long --icons --git'
-alias lta='lt -a'
+if command -v eza &> /dev/null; then
+  alias ls='eza -lh --group-directories-first --icons=auto'
+  alias lsa='ls -a'
+  alias lt='eza --tree --level=2 --long --icons --git'
+  alias lta='lt -a'
+fi
 
 # bun completions
-[ -s "/home/teo/.bun/_bun" ] && source "/home/teo/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # Modern pager setup
-export PAGER='bat --plain'
-export MANPAGER="sh -c 'col -bx | bat -l man --plain'"
+if command -v bat &> /dev/null; then
+  export PAGER='bat --plain'
+  export MANPAGER="sh -c 'col -bx | bat -l man --plain'"
+fi
 export LESS='-g -i -M -R -S -w -z4'
