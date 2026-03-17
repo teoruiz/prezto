@@ -10,6 +10,11 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
+# ZMX session indicator (using psvar[11], same pattern Pure uses for virtualenv with psvar[12])
+_zmx_precmd() { psvar[11]="${ZMX_SESSION}" }
+add-zsh-hook precmd _zmx_precmd
+PROMPT='%(11V.%F{cyan}[%11v]%f .)'"$PROMPT"
+
 # Customize to your needs...
 # .local in path
 export PATH="$HOME/.local/bin:$PATH"
@@ -84,6 +89,11 @@ if command -v eza &> /dev/null; then
   alias lsa='ls -a'
   alias lt='eza --tree --level=2 --long --icons --git'
   alias lta='lt -a'
+fi
+
+# zmx completions
+if command -v zmx &> /dev/null; then
+  eval "$(zmx completions zsh)"
 fi
 
 # bun completions
