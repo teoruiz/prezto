@@ -10,6 +10,21 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
+# Always show the host in pure's preprompt, in a muted colour derived from the
+# hostname so each machine is recognisable at a glance. Pure's own user@host
+# (SSH, root, containers) still takes precedence and picks up the same colour.
+if (( $+functions[prompt_pure_state_setup] )); then
+  () {
+    local -a palette=(67 72 73 107 108 109 110 137 139 140 143 146 173 174 175 179 180 181)
+    local -i h=0
+    local c
+    for c in ${(s::)HOST%%.*}; do (( h = (h * 31 + #c) % 1000003 )); done
+    (( h = h % ${#palette} + 1 ))
+    zstyle ':prompt:pure:host' color ${palette[h]}
+  }
+  [[ -z $prompt_pure_state[username] ]] && prompt_pure_state[username]='%F{$prompt_pure_colors[host]}%m%f'
+fi
+
 # Customize to your needs...
 # .local in path
 export PATH="$HOME/.local/bin:$PATH"
