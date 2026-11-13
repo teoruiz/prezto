@@ -15,10 +15,16 @@ fi
 # (SSH, root, containers) still takes precedence and picks up the same colour.
 if (( $+functions[prompt_pure_state_setup] )); then
   () {
+    # Pinned colours for machines that must stay distinct; others fall back to a hash.
+    local -A pinned=(trevejo 179 chinyero 72)
     local -a palette=(67 72 73 107 108 109 110 137 139 140 143 146 173 174 175 179 180 181)
     local -i h=0
-    local c
-    for c in ${(s::)HOST%%.*}; do (( h = (h * 31 + #c) % 1000003 )); done
+    local c host=${HOST%%.*}
+    if [[ -n ${pinned[$host]} ]]; then
+      zstyle ':prompt:pure:host' color ${pinned[$host]}
+      return
+    fi
+    for c in ${(s::)host}; do (( h = (h * 31 + #c) % 1000003 )); done
     (( h = h % ${#palette} + 1 ))
     zstyle ':prompt:pure:host' color ${palette[h]}
   }
